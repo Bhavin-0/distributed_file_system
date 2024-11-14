@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File List</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const deleteButtons = document.querySelectorAll(".delete-button");
+
+            deleteButtons.forEach(button => {
+                button.addEventListener("click", async function(event) {
+                    event.preventDefault(); // Prevent link from navigating
+                    
+                    const filename = this.dataset.filename;
+
+                    try {
+                        const response = await fetch(`/delete/${filename}`, {
+                            method: "POST"
+                        });
+
+                        if (response.ok) {
+                            alert("File deleted successfully!");
+                            // Optionally, remove the deleted file element from the DOM
+                            this.closest("li").remove();
+                        } else {
+                            alert("Failed to delete file.");
+                        }
+                    } catch (error) {
+                        alert("An error occurred. Please try again.");
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Available Files</h1>
+    <ul>
+        {% for file in files %}
+            <li>
+                <span class="file-name">{{ file }}</span>
+                <a href="/download/{{ file }}">Download</a>
+                <button class="delete-button" data-filename="{{ file }}">Delete</button>
+            </li>
+        {% endfor %}
+    </ul>
+    
+    <a href="/">Back to Upload</a>
+</body>
+</html>
